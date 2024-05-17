@@ -10,21 +10,10 @@ key = os.environ.get("SUPABASE_KEY")
 
 supabase = create_client(url, key)
 
+# This is simple guide to call API, so you might need to disable RLS for specified table in supabase
+
 # This is to call API endpoints
-# print(requests.get("http://127.0.0.1:8000/items?count=20").json())
-# print(datetime.now())
-# print(
-#   requests.post(
-#     "http://127.0.0.1:8000/fuel-price",
-#     json={
-#   "date": datetime.now(timezone.utc),
-#   "ron95": 9.0,
-#   "ron97": 8.99,
-#   "diesel": 7.77,
-#   "series_type": "string"
-#     }
-#   ).json()
-# )
+print(requests.get("http://127.0.0.1:8000/fuel-price").json())
 
 payload = {
     "date": "2024-05-14",
@@ -33,7 +22,7 @@ payload = {
     "diesel": 9.99,
     "series_type": "test"
   }
-print(list(payload))
+
 
 
 
