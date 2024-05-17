@@ -61,19 +61,13 @@ Selection = dict[
 
 @app.post("/fuel-price")
 def add_fuel_data(payload: Fuel):
-    check_date_exist = supabase.table("fuel_price_string").select("date").eq("date", payload.date).execute()
+    check_date_exist = supabase.table("fuel_price").select("date").eq("date", payload.date).execute()
     for item in check_date_exist.data:
         if item["date"] == payload.date:
             raise HTTPException(status_code=400, detail=f"Fuel price data with date '{payload.date}' already exists.")
         
-    fuel_price = supabase.table("fuel_price_string").insert(payload.model_dump()).execute()
-    return {"added": fuel_price}
-
-class Update_Body(BaseModel):
-    ron95: float
-    ron97: float
-    diesel: float
-    series_type: str   
+    fuel_price = supabase.table("fuel_price").insert(payload.model_dump()).execute()
+    return {"added": fuel_price} 
 
 # The 'responses' keyword allows you to specify which responses a user can expect from this endpoint.
 @app.put(
@@ -88,7 +82,7 @@ def update_fuel_price_by_date(
     fuel_date: str = Path(title="Date", description="in 'YYYY-MM-DDDD' format"),
     payload: dict = Body(title="Details to update", description="in JSON format", example={"ron95":0, "ron97":0, "diesel":0, "series_type":"string"})
 ):
-    check_date_exist = supabase.table("fuel_price_string").select("date").eq("date", fuel_date).execute()
+    check_date_exist = supabase.table("fuel_price").select("date").eq("date", fuel_date).execute()
     if check_date_exist.data == []:
         raise HTTPException(status_code=404, detail=f"Fuel price data with date '{fuel_date}' does not exist.")
     
@@ -99,13 +93,13 @@ def update_fuel_price_by_date(
     if json_body == []:
         raise HTTPException(status_code=400, detail="No parameter given.")
 
-    fuel_price = supabase.table("fuel_price_string").update(payload).eq("date", fuel_date).execute()
+    fuel_price = supabase.table("fuel_price").update(payload).eq("date", fuel_date).execute()
     return {"updated": fuel_price}
 
 
 @app.delete("/fuel-price/delete/{fuel_date}")
 def delete_fuel_data_by_date(fuel_date: str):
-    fuel_price = supabase.table("fuel_price_string").delete().eq("date",fuel_date).execute()
+    fuel_price = supabase.table("fuel_price").delete().eq("date",fuel_date).execute()
     if fuel_price.data == []:
         raise HTTPException(status_code=404, detail=f"Fuel price data with date '{fuel_date}' does not exist.")
     return {"deleted": fuel_price}
